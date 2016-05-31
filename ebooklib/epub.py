@@ -543,8 +543,6 @@ class EpubBook(object):
             'cover': COVER_XML
         }
 
-        self.add_metadata('OPF', 'generator', '', {'name': 'generator', 'content': 'Ebook-lib %s' % '.'.join([str(s) for s in VERSION])})
-
         # default to using a randomly-unique identifier if one is not specified manually
         self.set_identifier(str(uuid.uuid4()))
 
