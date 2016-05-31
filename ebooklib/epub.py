@@ -859,9 +859,9 @@ class EpubWriter(object):
         #         for n_id, ns_url in six.iteritems(NAMESPACES):
         #             if ns_name == ns_url:
         #                 nsmap[n_id.lower()] = NAMESPACES[n_id]
-        metadata = etree.SubElement(root, 'metadata', nsmap=nsmap)
+        metadata = etree.SubElement(root, '{{{0}}}metadata'.format(NAMESPACES['OPF']), nsmap=nsmap)
 
-        el = etree.SubElement(metadata, 'meta', {'property': 'dcterms:modified'})
+        el = etree.SubElement(metadata, '{{{0}}}meta'.format(NAMESPACES['OPF']), {'property': 'dcterms:modified'})
         if 'mtime' in self.options:
             mtime = self.options['mtime']
         else:
@@ -873,14 +873,14 @@ class EpubWriter(object):
             if ns_name == NAMESPACES['OPF']:
                 for values in values.values():
                     for v in values:
-                        if 'property' in v[1] and v[1]['property'] == "dcterms:modified":
+                        if v[1] and 'property' in v[1] and v[1]['property'] == "dcterms:modified":
                             continue
                         try:
-                            el = etree.SubElement(metadata, 'meta', v[1])
+                            el = etree.SubElement(metadata, '{{{0}}}meta'.format(ns_name), v[1])
                             if v[0]:
                                 el.text = v[0]
-                        except ValueError:
-                            logging.error('Could not create metadata.')
+                        except ValueError as e:
+                            logging.error('Could not create metadata.\n{}'.format(e))
             else:
                 for name, values in six.iteritems(values):
                     for v in values:
@@ -891,8 +891,8 @@ class EpubWriter(object):
                                 el = etree.SubElement(metadata, '%s' % name, v[1])
 
                             el.text = v[0]
-                        except ValueError:
-                            logging.error('Could not create metadata "{}".'.format(name))
+                        except ValueError as e:
+                            logging.error('Could not create metadata "{}".\n{}'.format(name, e))
 
         # MANIFEST
         manifest = etree.SubElement(root, 'manifest')
